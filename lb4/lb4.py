@@ -40,7 +40,7 @@ def summarize_text(text, model):
         {"role": "user", "content": f"Here is a text: '{text}'. Please summarize it in no more than 2-3 sentences."}
     ]
     response = ollama.chat(model=model, messages=messages)
-    return response.message.content.strip()
+    return response.message.content
 
 
 def analyze_sentiment_with_ollama(text, model):
@@ -53,12 +53,12 @@ def analyze_sentiment_with_ollama(text, model):
         sentiment = sentiment_json.get("sentiment", [])
         confidence = sentiment_json.get("confidence", [])
         sentiment_output = ""
-        if reasoning:
-            sentiment_output += f"Reasoning: {''.join(reasoning)}\n"
         if sentiment:
             sentiment_output += f"Sentiment: {''.join(str(sentiment))}\n"
         if confidence:
             sentiment_output += f"Confidence: {''.join(str(confidence))}\n"
+        if reasoning:
+            sentiment_output += f"Reasoning: {''.join(reasoning)}\n"
         return sentiment_output.strip() if sentiment_output else "No sentiment data available."
 
     except Exception as e:
