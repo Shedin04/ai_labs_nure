@@ -40,11 +40,27 @@ def summarize_text(text, model):
 def analyze_sentiment_with_ollama(text, model):
     logging.info(f"Analyzing sentiment using the model {model}...")
     start_time = time.time()
-    response = ollama.generate(model=model, prompt=text)
+    response = ollama.generate(model=model, prompt=text, format='json')
     end_time = time.time()
     sentiment_time = end_time - start_time
     logging.info(f"Analyzing sentiment successful. Time taken: {sentiment_time:.2f} seconds.")
-    return response.response.strip()
+
+    sentiment_data = response.response.strip()
+    try:
+        sentiment_json = eval(sentiment_data)  # This will convert string to dict
+        reasoning = sentiment_json.get("reasoning", [])
+        sentiment = sentiment_json.get("sentiment", [])
+        confidence = sentiment_json.get("confidence", [])
+
+        sentiment_output = "Reasoning: " + ("".join(reasoning) if reasoning else "[]") + "\n"
+        sentiment_output += "Sentiment: " + ("".join(str(sentiment)) if sentiment else "[]") + "\n"
+        sentiment_output += "Confidence: " + ("".join(str(confidence)) if confidence else "[]") + "\n"
+
+        return sentiment_output.strip()
+
+    except Exception as e:
+        logging.error(f"Error parsing sentiment data: {e}")
+        return "Error in processing sentiment data."
 
 
 def main():
@@ -64,7 +80,7 @@ def main():
     logging.info(f"Generated text saved to 'generated_text.txt'.")
 
     sentiment_generated_text = analyze_sentiment_with_ollama(generated_text, sentiment_model)
-    logging.info(f"Sentiment of generated text: {sentiment_generated_text}")
+    logging.info(f"Sentiment of generated text:\n{sentiment_generated_text}")
     with open("sentiment.txt", "w") as gen_file:
         gen_file.write(sentiment_generated_text)
 
