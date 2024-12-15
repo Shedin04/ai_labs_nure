@@ -1,0 +1,3 @@
+Reasoning: This text is a humorous joke with the iFart being an instrument of chaos and prank. The sentiment of the text has to be interpreted in context. This text seems mostly neutral as it is a playful joke, but the response from Jobs to Cook shows concern about whether people will find this funnier or if it is more likely to offend others.
+Sentiment: 0.367
+Confidence: 1.0
