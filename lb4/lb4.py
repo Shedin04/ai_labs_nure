@@ -10,6 +10,7 @@ logging.basicConfig(
 
 generation_model = "llama2"  # for text generation
 summarization_model = "mistral"  # for text summarizing
+sentiment_model = "mvkvl/sentiments:aya"  # for sentiment analysis
 
 
 def generate_text(prompt, model):
@@ -36,6 +37,16 @@ def summarize_text(text, model):
     return response.message.content.strip()
 
 
+def analyze_sentiment_with_ollama(text, model):
+    logging.info(f"Analyzing sentiment using the model {model}...")
+    start_time = time.time()
+    response = ollama.generate(model=model, prompt=text)
+    end_time = time.time()
+    sentiment_time = end_time - start_time
+    logging.info(f"Analyzing sentiment successful. Time taken: {sentiment_time:.2f} seconds.")
+    return response.response.strip()
+
+
 def main():
     logging.info("Program started.")
 
@@ -46,16 +57,19 @@ def main():
     logging.info(f"Prompt saved to 'prompt.txt'.")
 
     generated_text = generate_text(generation_prompt, generation_model)
-
     logging.info(f"Generated text:\n{generated_text}")
-
-    summarized_text = summarize_text(generated_text, summarization_model)
-
-    logging.info(f"Summarized text:\n{summarized_text}")
 
     with open("generated_text.txt", "w") as gen_file:
         gen_file.write(generated_text)
     logging.info(f"Generated text saved to 'generated_text.txt'.")
+
+    sentiment_generated_text = analyze_sentiment_with_ollama(generated_text, sentiment_model)
+    logging.info(f"Sentiment of generated text: {sentiment_generated_text}")
+    with open("sentiment.txt", "w") as gen_file:
+        gen_file.write(sentiment_generated_text)
+
+    summarized_text = summarize_text(generated_text, summarization_model)
+    logging.info(f"Summarized text:\n{summarized_text}")
 
     with open("summarized_text.txt", "w") as sum_file:
         sum_file.write(summarized_text)
